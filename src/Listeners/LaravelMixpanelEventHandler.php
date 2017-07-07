@@ -12,6 +12,11 @@ use Illuminate\Routing\Events\RouteMatched;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Auth\Events\Attempting;
+use Illuminate\Auth\Events\Authenticated;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
+
 class LaravelMixpanelEventHandler
 {
     protected $guard;
@@ -85,7 +90,7 @@ class LaravelMixpanelEventHandler
     public function onUserLogout(Logout $logout)
     {
         $user = $logout->user;
-        
+
         if ($user) {
             $this->mixPanel->identify($user->getKey());
         }
@@ -114,9 +119,12 @@ class LaravelMixpanelEventHandler
      */
     public function subscribe(Dispatcher $events)
     {
-        $events->listen('Illuminate\Auth\Events\Attempting', 'GeneaLabs\LaravelMixpanel\Listeners\LaravelMixpanelEventHandler@onUserLoginAttempt');
-        $events->listen('Illuminate\Auth\Events\Login', 'GeneaLabs\LaravelMixpanel\Listeners\LaravelMixpanelEventHandler@onUserLogin');
-        $events->listen('Illuminate\Auth\Events\Logout', 'GeneaLabs\LaravelMixpanel\Listeners\LaravelMixpanelEventHandler@onUserLogout');
+        $events->listen('auth.attempt', self::class . '@onUserLoginAttempt');
+        $events->listen('auth.login', self::class . '@onUserLogin');
+        $events->listen('auth.logout', self::class . '@onUserLogout');
+        $events->listen(Attempting::class, self::class . '@onUserLoginAttempt');
+        $events->listen(Login::class, self::class . '@onUserLogin');
+        $events->listen(Logout::class, self::class . '@onUserLogout');
         $events->listen('Illuminate\Routing\Events\RouteMatched', 'GeneaLabs\LaravelMixpanel\Listeners\LaravelMixpanelEventHandler@onViewLoad');
     }
 }
