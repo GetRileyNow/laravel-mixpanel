@@ -1,9 +1,6 @@
 <?php namespace GeneaLabs\LaravelMixpanel\Listeners;
 
 use GeneaLabs\LaravelMixpanel\LaravelMixpanel;
-use Illuminate\Auth\Events\Attempting;
-use Illuminate\Auth\Events\Login;
-use Illuminate\Auth\Events\Logout;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Events\Dispatcher;
@@ -38,10 +35,10 @@ class LaravelMixpanelEventHandler
     /**
      * @param array $event
      */
-    public function onUserLoginAttempt(Attempting $event)
+    public function onUserLoginAttempt($event)
     {
-        $email = $event->credentials['email'] ?: '';
-        $password = $event->credentials['password'] ?: '';
+        $email = $event['email'] ?: '';
+        $password = $event['password'] ?: '';
 
         $user = App::make(config('auth.model'))->where('email', $email)->first();
 
@@ -56,9 +53,9 @@ class LaravelMixpanelEventHandler
     /**
      * @param Model $user
      */
-    public function onUserLogin(Login $login)
+    public function onUserLogin($event)
     {
-        $user = $login->user;
+        $user = $event;
         $firstName = $user->first_name;
         $lastName = $user->last_name;
 
@@ -87,9 +84,9 @@ class LaravelMixpanelEventHandler
     /**
      * @param Model $user
      */
-    public function onUserLogout(Logout $logout)
+    public function onUserLogout($event)
     {
-        $user = $logout->user;
+        $user = $event;
 
         if ($user) {
             $this->mixPanel->identify($user->getKey());
