@@ -16,7 +16,7 @@ class LaravelMixpanelServiceProvider extends ServiceProvider
     {
         include __DIR__ . '/../Http/routes.php';
 
-        if (config('services.mixpanel.enable-default-tracking')) {
+        if (config('services.mixpanel.enable-default-tracking', true)) {
             $this->app->make(config('auth.model'))->observe(new LaravelMixpanelUserObserver($request, $mixPanel));
             $eventHandler = new LaravelMixpanelEventHandler($request, $guard, $mixPanel);
 
