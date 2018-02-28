@@ -100,16 +100,16 @@ class LaravelMixpanelEventHandler
      */
     public function onViewLoad($event)
     {
-        $route = $event;
-
-        if (Auth::check()) {
-            $this->mixPanel->identify(Auth::user()->getKey());
-            $this->mixPanel->people->set(Auth::user()->getKey(), [], $this->request->ip());
-        }
-
-        $routeAction = $route->getAction();
-        $route = (is_array($routeAction) && array_key_exists('as', $routeAction) ? $routeAction['as'] : null);
-        $this->mixPanel->track('Page View', ['Route' => $route]);
+//        $route = $event;
+//
+//        if (Auth::check()) {
+//            $this->mixPanel->identify(Auth::user()->getKey());
+//            $this->mixPanel->people->set(Auth::user()->getKey(), [], $this->request->ip());
+//        }
+//
+//        $routeAction = $route->getAction();
+//        $route = (is_array($routeAction) && array_key_exists('as', $routeAction) ? $routeAction['as'] : null);
+//        $this->mixPanel->track('Page View', ['Route' => $route]);
     }
 
     /**
@@ -120,11 +120,11 @@ class LaravelMixpanelEventHandler
         $events->listen('auth.attempt', self::class . '@onUserLoginAttempt');
         $events->listen('auth.login', self::class . '@onUserLogin');
         $events->listen('auth.logout', self::class . '@onUserLogout');
-        $events->listen('router.matched', self::class . '@onViewLoad');
+//        $events->listen('router.matched', self::class . '@onViewLoad');
 
         $events->listen(Attempting::class, self::class . '@onUserLoginAttempt');
         $events->listen(Login::class, self::class . '@onUserLogin');
         $events->listen(Logout::class, self::class . '@onUserLogout');
-        $events->listen(RouteMatched::class, self::class, '@onViewLoad');
+//        $events->listen(RouteMatched::class, self::class, '@onViewLoad');
     }
 }
